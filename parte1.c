@@ -1,6 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
-//#include <windows.h>
+#ifdef _WIN32
+    #include <Windows.h>
+    #define LIMPA "cls"
+#else
+    #include <unistd.h>
+    #define LIMPA "clear"
+#endif
 
 #define ORG 'X'
 #define VAZ '.'
@@ -159,11 +165,10 @@ void jogaJogoVida(char **mAtual, int nL, int nC, int nCiclos)
   int c;
 
   //imprimindo na tela a matriz inicial
-  //system("cls");
-  system("clear");
+  system(LIMPA);
   imprimeMatriz(mAtual,nL,nC);
   // getchar();
-  // Sleep(100);
+   sleep(100);
 
   mAnt = alocaMatriz(nL,nC);
 
@@ -173,11 +178,10 @@ void jogaJogoVida(char **mAtual, int nL, int nC, int nCiclos)
 
         //atualizaMat(mAtual,mAnt,nL,nC); //TO DO implemente nesta função as regras que atualizam a matriz mAtual conforme o jogo da vida
                                   //lembre de usar os dados de mAnt como a matriz do jogo no ciclo anterior para atualizar mAtual
-        //system("cls");
-        system("clear");
+        system(LIMPA);
         imprimeMatriz(mAtual,nL,nC);// TO DO
         // getchar();
-        // Sleep(100);
+        sleep(100);
   }
   desalocaMatriz(mAnt,nL); //TO DO
 
