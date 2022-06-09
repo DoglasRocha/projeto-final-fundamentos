@@ -3,16 +3,15 @@
 #ifdef _WIN32
     #include <Windows.h>
     #define LIMPA "cls"
-    #define TMP_ESPERA 100
 #else
     #include <unistd.h>
     #define LIMPA "clear"
-    #define TMP_ESPERA 1
 #endif
 
 #define ORG 'X'
 #define VAZ '.'
 #define TAM 101
+#define TMP_ESPERA 1
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -29,7 +28,9 @@ void inicLWSS(char **m, int nL, int nC);
 void menuInicJogo(char **mat, int nL, int nC);
 void imprimeMatriz(char **mat, int n_linhas, int n_colunas);
 void copiaMatriz(char **mAnterior, char **mAtual, int nL, int nC);
-
+void atualizaMat(char **mAtual, char **mAnt, int n_linhas, int n_colunas);
+void vizinhos_possiveis(int *length, int number, int limit, int positions[]);
+char calcula_vivo_morto(int pos_x_possiveis[], int pos_y_possiveis[], int tam_x, int tam_y, char **mAnt, int x_atual, int y_atual);
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////// Parte a ser completada //////////////////////////////////////////
@@ -88,9 +89,7 @@ void inicBloco(char **m, int nL, int nC)
     char padrao[2][2]={{ORG,ORG},{ORG,ORG}};
     int i,j,xInic=nL/2, yInic=nC/2;
 
-
     limpaMatriz(m,nL,nC);
-
 
     for(i=0;i<2;i++)
         for(j=0;j<2;j++)
@@ -99,12 +98,10 @@ void inicBloco(char **m, int nL, int nC)
 
 void inicSapo(char **m, int nL, int nC)
 {
-
     char padrao[2][4]={{VAZ,ORG,ORG,ORG},{ORG,ORG,ORG,VAZ}};
     int i,j,xInic=nL/2, yInic=nC/2;
 
     limpaMatriz(m,nL,nC);
-
 
     for(i=0;i<2;i++)
         for(j=0;j<4;j++)
@@ -142,6 +139,7 @@ void inicLWSS(char **m, int nL, int nC)
             m[xInic+i][yInic+j]=padrao[i][j];
 
 }
+
 void menuInicJogo(char **mat, int nL, int nC)
 {
     int opcao;
@@ -159,7 +157,7 @@ void menuInicJogo(char **mat, int nL, int nC)
 
     imprimeMatriz(mat,nL,nC);// TO DO
 
-    printf("Se inicializacao correta digite ENTER tecla para iniciar o jogo..."); 
+    printf("Se inicializacao correta digite ENTER para iniciar o jogo..."); 
     while(getchar()!='\n')
     ; 
     getchar();
@@ -182,10 +180,11 @@ void jogaJogoVida(char **mAtual, int nL, int nC, int nCiclos)
     {
         copiaMatriz(mAnt,mAtual,nL,nC);
 
-        //atualizaMat(mAtual,mAnt,nL,nC); //TO DO implemente nesta função as regras que atualizam a matriz mAtual conforme o jogo da vida
+        atualizaMat(mAtual,mAnt,nL,nC); //TO DO implemente nesta função as regras que atualizam a matriz mAtual conforme o jogo da vida
                                 //lembre de usar os dados de mAnt como a matriz do jogo no ciclo anterior para atualizar mAtual
         system(LIMPA);
         imprimeMatriz(mAtual,nL,nC);
+        // getchar();
         
         sleep(TMP_ESPERA);
     }
@@ -227,4 +226,63 @@ void copiaMatriz(char **mAnterior, char **mAtual, int nL, int nC)
     int l, c;
     for(l = 0; l < nL; l++)
         for(c = 0; c < nC; c++) mAnterior[l][c] = mAtual[l][c];
+}
+
+void atualizaMat(char **mAtual, char **mAnt, int n_linhas, int n_colunas)
+{
+    int pos_x_possiveis[3], pos_y_possiveis[3], tam_x, tam_y;
+
+    for (int i = 0; i < n_linhas; i++)
+    {
+        vizinhos_possiveis(&tam_x, i, n_linhas, pos_x_possiveis);
+        for (int j = 0; j < n_colunas; j++)
+        {
+            vizinhos_possiveis(&tam_y, j, n_colunas, pos_y_possiveis);
+
+            mAtual[i][j] = calcula_vivo_morto(pos_x_possiveis, pos_y_possiveis, tam_x, tam_y, mAnt, i, j);
+        }
+    }
+}
+
+void vizinhos_possiveis(int *length, int number, int limit, int positions[])
+{
+    // coloca em um array as posicoes vizinhas possiveis
+
+    if ((number - 1) < 0)
+        positions[0] = number,
+        positions[1] = number + 1,
+        *length = 2;
+
+    else if ((number + 1) > (limit - 1))
+        positions[0] = number - 1,
+        positions[1] = number,
+        *length = 2;
+    
+    else
+        positions[0] = number - 1,
+        positions[1] = number,
+        positions[2] = number + 1,
+        *length = 3;
+}
+
+char calcula_vivo_morto(int pos_x_possiveis[], int pos_y_possiveis[], int tam_x, int tam_y, char **mAnt, int x_atual, int y_atual)
+{
+    /* Uma célula viva morre de solidão se tiver menos de duas vizinhas vivas.
+    Uma célula viva morre por superpopulação se tiver mais que três vizinhas vivas.
+    Uma célula viva sobrevive se tiver duas ou três vizinhas vivas.
+    Uma célula morta ganha vida se tiver exatamente três vizinhas vivas */
+    int vivos = 0;
+
+    for (int i = 0; i < tam_x; i++)
+        for (int j = 0; j < tam_y; j++)
+        {
+            if (pos_x_possiveis[i] == x_atual && pos_y_possiveis[j] == y_atual) continue;
+            if (mAnt[pos_x_possiveis[i]][pos_y_possiveis[j]] == 'X') vivos++;
+        }
+
+    if (mAnt[x_atual][y_atual] == 'X')
+        return (vivos > 3 || vivos < 2) ? '.' : 'X';
+
+    return vivos == 3 ? 'X' : '.';
+    
 }
