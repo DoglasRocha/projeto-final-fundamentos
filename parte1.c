@@ -33,7 +33,7 @@ void vizinhos_possiveis(int *length, int number, int limit, int positions[]);
 char calcula_vivo_morto(int pos_x_possiveis[], int pos_y_possiveis[], int tam_x, int tam_y, char **mAnt, int x_atual, int y_atual);
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////// Parte a ser completada //////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 void jogaJogoVida(char **mAtual, int nL, int nC, int nCiclos);
@@ -244,25 +244,25 @@ void atualizaMat(char **mAtual, char **mAnt, int n_linhas, int n_colunas)
     }
 }
 
-void vizinhos_possiveis(int *length, int number, int limit, int positions[])
+void vizinhos_possiveis(int *tamanho, int pos_atual, int tam_matriz, int vizinhos[])
 {
     // coloca em um array as posicoes vizinhas possiveis
 
-    if ((number - 1) < 0)
-        positions[0] = number,
-        positions[1] = number + 1,
-        *length = 2;
+    if ((pos_atual - 1) < 0)
+        vizinhos[0] = pos_atual,
+        vizinhos[1] = pos_atual + 1,
+        *tamanho = 2;
 
-    else if ((number + 1) > (limit - 1))
-        positions[0] = number - 1,
-        positions[1] = number,
-        *length = 2;
+    else if ((pos_atual + 1) > (tam_matriz - 1))
+        vizinhos[0] = pos_atual - 1,
+        vizinhos[1] = pos_atual,
+        *tamanho = 2;
     
     else
-        positions[0] = number - 1,
-        positions[1] = number,
-        positions[2] = number + 1,
-        *length = 3;
+        vizinhos[0] = pos_atual - 1,
+        vizinhos[1] = pos_atual,
+        vizinhos[2] = pos_atual + 1,
+        *tamanho = 3;
 }
 
 char calcula_vivo_morto(int pos_x_possiveis[], int pos_y_possiveis[], int tam_x, int tam_y, char **mAnt, int x_atual, int y_atual)
