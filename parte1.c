@@ -223,5 +223,3 @@ void copiaMatriz(char **mAnterior, char **mAtual, int nL, int nC)
     for(l = 0; l < nL; l++)
         for(c = 0; c < nC; c++) mAnterior[l][c] = mAtual[l][c];
 }
-
-// nada
