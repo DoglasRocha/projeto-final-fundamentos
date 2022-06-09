@@ -45,7 +45,7 @@ int main()
 
     do
     {  
-        printf("Digite o numero de linhas da matriz, o numero  de colunas da matriz, e o numero de ciclos, separados por espaços (valores inteiros):");
+        printf("Digite o numero de linhas da matriz, o numero  de colunas da matriz, e o numero de ciclos, separados por espaços (valores inteiros): ");
 
         scanf("%d %d %d", &nL, &nC, &nCiclos);
 
@@ -54,7 +54,7 @@ int main()
         menuInicJogo(mat,nL,nC);
         jogaJogoVida(mat,nL,nC,nCiclos);
 
-        printf("Deseja jogar novamente? Digite qualquer caractere para continuar, ou \"n\"/\"N\" para finalizar:");
+        printf("Deseja jogar novamente? Digite qualquer caractere para continuar, ou \"n\"/\"N\" para finalizar: ");
         scanf("%c", &jogarNovamente);
     } while (jogarNovamente != 'n' && jogarNovamente != 'N');
 
@@ -157,7 +157,10 @@ void menuInicJogo(char **mat, int nL, int nC)
 
     imprimeMatriz(mat,nL,nC);// TO DO
 
-    printf("Se inicializacao correta digite qualquer tecla para iniciar o jogo..."); while(getchar()!='\n'); getchar();
+    printf("Se inicializacao correta digite ENTER tecla para iniciar o jogo..."); 
+    while(getchar()!='\n')
+    ; 
+    getchar();
 
 }
 void jogaJogoVida(char **mAtual, int nL, int nC, int nCiclos)
@@ -169,7 +172,7 @@ void jogaJogoVida(char **mAtual, int nL, int nC, int nCiclos)
     system(LIMPA);
     imprimeMatriz(mAtual,nL,nC);
     // getchar();
-    sleep(100);
+    sleep(1);
 
     mAnt = alocaMatriz(nL,nC);
 
@@ -180,12 +183,12 @@ void jogaJogoVida(char **mAtual, int nL, int nC, int nCiclos)
         //atualizaMat(mAtual,mAnt,nL,nC); //TO DO implemente nesta função as regras que atualizam a matriz mAtual conforme o jogo da vida
                                 //lembre de usar os dados de mAnt como a matriz do jogo no ciclo anterior para atualizar mAtual
         system(LIMPA);
-        imprimeMatriz(mAtual,nL,nC);// TO DO
-        // getchar();
-        sleep(100);
+        imprimeMatriz(mAtual,nL,nC);
+        
+        sleep(1);
     }
-    desalocaMatriz(mAnt,nL); //TO DO
 
+    desalocaMatriz(mAnt,nL);
 }
 
 char **alocaMatriz(int n_linhas, int n_colunas)
@@ -210,7 +213,7 @@ void imprimeMatriz(char **mat, int n_linhas, int n_colunas)
 {
     for (int i = 0; i < n_linhas; i++)
     {
-        for (int j = 0; i < n_colunas; j++)
+        for (int j = 0; j < n_colunas; j++)
             printf("%c", mat[i][j]);
         
         printf("\n");
