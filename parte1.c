@@ -224,4 +224,4 @@ void copiaMatriz(char **mAnterior, char **mAtual, int nL, int nC)
         for(c = 0; c < nC; c++) mAnterior[l][c] = mAtual[l][c];
 }
 
-// doglas nao e gay
+// nada
