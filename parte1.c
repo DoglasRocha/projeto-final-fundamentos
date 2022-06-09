@@ -3,9 +3,11 @@
 #ifdef _WIN32
     #include <Windows.h>
     #define LIMPA "cls"
+    #define TMP_ESPERA 100
 #else
     #include <unistd.h>
     #define LIMPA "clear"
+    #define TMP_ESPERA 1
 #endif
 
 #define ORG 'X'
@@ -172,7 +174,7 @@ void jogaJogoVida(char **mAtual, int nL, int nC, int nCiclos)
     system(LIMPA);
     imprimeMatriz(mAtual,nL,nC);
     // getchar();
-    sleep(1);
+    sleep(TMP_ESPERA);
 
     mAnt = alocaMatriz(nL,nC);
 
@@ -185,7 +187,7 @@ void jogaJogoVida(char **mAtual, int nL, int nC, int nCiclos)
         system(LIMPA);
         imprimeMatriz(mAtual,nL,nC);
         
-        sleep(1);
+        sleep(TMP_ESPERA);
     }
 
     desalocaMatriz(mAnt,nL);
