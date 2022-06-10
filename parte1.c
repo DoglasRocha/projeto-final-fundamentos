@@ -179,11 +179,9 @@ void jogaJogoVida(char **mAtual, int nL, int nC, int nCiclos)
     {
         copiaMatriz(mAnt,mAtual,nL,nC);
 
-        atualizaMat(mAtual,mAnt,nL,nC); //TO DO implemente nesta função as regras que atualizam a matriz mAtual conforme o jogo da vida
-                                //lembre de usar os dados de mAnt como a matriz do jogo no ciclo anterior para atualizar mAtual
+        atualizaMat(mAtual,mAnt,nL,nC);
         system(LIMPA);
         imprimeMatriz(mAtual,nL,nC);
-        // getchar();
         
         sleep(TMP_ESPERA);
     }
