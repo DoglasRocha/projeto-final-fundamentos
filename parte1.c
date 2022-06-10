@@ -49,7 +49,6 @@ int main()
     do
     {  
         printf("Digite o numero de linhas da matriz, o numero  de colunas da matriz, e o numero de ciclos, separados por espaços (valores inteiros): ");
-
         scanf("%d %d %d", &nL, &nC, &nCiclos);
 
         mat = alocaMatriz(nL,nC);

@@ -6,7 +6,6 @@
 #else
     #include <unistd.h>
     #define LIMPA "clear"
-    #define TMP_ESPERA 1
 #endif
 
 #define ORG 'X'
@@ -39,6 +38,7 @@ void inicLWSS(Tab *tabuleiro);
 void menuInicJogo(Tab *tabuleiro);
 void imprimeMatriz(Tab *tabuleiro);
 void copiaMatriz(Tab *tabuleiro);
+void jogaJogoVida(Tab *tabuleiro);
 
 
 
@@ -46,7 +46,6 @@ void copiaMatriz(Tab *tabuleiro);
 //////////////////////////// Parte a ser completada //////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-void jogaJogoVida(Tab *tabuleiro);
 
 
 int main()
