@@ -39,8 +39,10 @@ void inicLWSS(Tab *tabuleiro);
 void menuInicJogo(Tab *tabuleiro);
 void imprimeMatriz(Tab *tabuleiro);
 void copiaMatriz(Tab *tabuleiro);
+void atualizaMat(Tab *tabuleiro);
+void vizinhos_possiveis(int *tamanho, int pos_atual,  Tab *tabuleiro, int vizinhos[]);
 
-
+char calcula_vivo_morto(int pos_x_possiveis[], int pos_y_possiveis[], int tam_x, int tam_y, Tab *tabuleiro, int x_atual, int y_atual);
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////// Parte a ser completada //////////////////////////////////////////
@@ -59,11 +61,14 @@ int main()
     {  
         printf("Digite o numero de linhas da matriz, o numero  de colunas da matriz, e o numero de ciclos, separados por espaços (valores inteiros): ");
 
-        scanf("%d %d %d", &tabuleiro.dim1, &tabuleiro.dim2, &tabuleiro.ciclosVida);
+        scanf(" %d %d %d", &tabuleiro.dim1, &tabuleiro.dim2, &tabuleiro.ciclosVida);
+
+    
 
         tabuleiro.m = alocaMatriz(&tabuleiro);
 
         menuInicJogo(&tabuleiro);
+        printf("Chegou no inicbloco");
         jogaJogoVida(&tabuleiro);
 
         printf("Deseja jogar novamente? Digite qualquer caractere para continuar, ou \"n\"/\"N\" para finalizar: ");
@@ -86,7 +91,7 @@ void inicBlinker(Tab *tabuleiro)
     char padrao[1][3]={{ORG,ORG,ORG}};
     int i,j, xInic=tabuleiro->dim1/2, yInic=tabuleiro->dim2/2;
 
-    limpaMatriz(&tabuleiro);
+    limpaMatriz(tabuleiro);
 
     for(i=0;i<1;i++)
         for(j=0;j<3;j++)
@@ -97,14 +102,18 @@ void inicBloco(Tab *tabuleiro)
 {
     char padrao[2][2]={{ORG,ORG},{ORG,ORG}};
     int i,j,xInic=tabuleiro->dim1/2, yInic=tabuleiro->dim2/2;
-
-    printf("%d",tabuleiro->dim1);
-    limpaMatriz(&tabuleiro);
-
+    limpaMatriz(tabuleiro);
+    
+    
+    
 
     for(i=0;i<2;i++)
         for(j=0;j<2;j++)
             tabuleiro->m[xInic+i][yInic+j]=padrao[i][j];
+
+    
+
+
 }
 
 void inicSapo(Tab *tabuleiro)
@@ -113,7 +122,7 @@ void inicSapo(Tab *tabuleiro)
     char padrao[2][4]={{VAZ,ORG,ORG,ORG},{ORG,ORG,ORG,VAZ}};
     int i,j,xInic=tabuleiro->dim1/2, yInic=tabuleiro->dim2/2;
 
-    limpaMatriz(&tabuleiro);
+    limpaMatriz(tabuleiro);
 
 
     for(i=0;i<2;i++)
@@ -127,7 +136,7 @@ void inicGlider(Tab *tabuleiro)
     char padrao[3][3]={{ORG,ORG,ORG},{ORG,VAZ,VAZ},{VAZ,ORG,VAZ}};
     int i,j,xInic,yInic;
 
-    limpaMatriz(&tabuleiro);
+    limpaMatriz(tabuleiro);
 
     xInic=tabuleiro->dim1-4;
     yInic=tabuleiro->dim2-4;
@@ -142,7 +151,7 @@ void inicLWSS(Tab *tabuleiro)
     char padrao[4][5]={{VAZ,ORG,VAZ,VAZ,ORG},{ORG,VAZ,VAZ,VAZ,VAZ},{ORG,VAZ,VAZ,VAZ,ORG},{ORG,ORG,ORG,ORG,VAZ}};
     int i,j,xInic,yInic;
 
-    limpaMatriz(&tabuleiro);
+    limpaMatriz(tabuleiro);
 
     xInic=tabuleiro->dim1-5;
     yInic=tabuleiro->dim2-6;
@@ -160,14 +169,14 @@ void menuInicJogo(Tab *tabuleiro)
     scanf("%d",&opcao);
     switch(opcao)
     {
-        case 1:   inicBloco(&tabuleiro); break;
-        case 2:   inicBlinker(&tabuleiro); break;
-        case 3:   inicSapo(&tabuleiro); break;
-        case 4:   inicGlider(&tabuleiro); break;
-        case 5:   inicLWSS(&tabuleiro); break;
+        case 1:   inicBloco(tabuleiro); break;
+        case 2:   inicBlinker(tabuleiro); break;
+        case 3:   inicSapo(tabuleiro); break;
+        case 4:   inicGlider(tabuleiro); break;
+        case 5:   inicLWSS(tabuleiro); break;
     }
 
-    imprimeMatriz(&tabuleiro);// TO DO
+    imprimeMatriz(tabuleiro);// TO DO
 
     printf("Se inicializacao correta digite ENTER tecla para iniciar o jogo..."); 
     while(getchar()!='\n')
@@ -179,23 +188,24 @@ void jogaJogoVida(Tab *tabuleiro)
 {
     char **mAnt;
     int c;
-
+    
     //imprimindo na tela a matriz inicial
     system(LIMPA);
-    imprimeMatriz(&tabuleiro);
+
+    imprimeMatriz(tabuleiro);
     // getchar();
     sleep(TMP_ESPERA);
 
-    tabuleiro->mAnterior = alocaMatriz(&tabuleiro);
+    tabuleiro->mAnterior = alocaMatriz(tabuleiro);
 
     for(c=1;c<=tabuleiro->ciclosVida;c++)
     {
-        copiaMatriz(&tabuleiro);
+        copiaMatriz(tabuleiro);
 
-        //atualizaMat(mAtual,mAnt,nL,nC); //TO DO implemente nesta função as regras que atualizam a matriz mAtual conforme o jogo da vida
+        atualizaMat(tabuleiro);//atualizaMat(mAtual,mAnt,nL,nC); //TO DO implemente nesta função as regras que atualizam a matriz mAtual conforme o jogo da vida
                                 //lembre de usar os dados de mAnt como a matriz do jogo no ciclo anterior para atualizar mAtual
         system(LIMPA);
-        imprimeMatriz(&tabuleiro);
+        imprimeMatriz(tabuleiro);
         
         sleep(TMP_ESPERA);
     }
@@ -209,6 +219,7 @@ char **alocaMatriz(Tab *tabuleiro)
 
     for (int i = 0; i < tabuleiro->dim1; i++)
         matriz[i] = (char *) malloc(tabuleiro->dim2 * sizeof(char));
+
 
     return matriz;
 }
@@ -241,4 +252,62 @@ void copiaMatriz(Tab *tabuleiro)
     int l, c;
     for(l = 0; l < tabuleiro->dim1; l++)
         for(c = 0; c < tabuleiro->dim2; c++) tabuleiro->mAnterior[l][c] = tabuleiro->m[l][c];
+}
+void atualizaMat(Tab *tabuleiro)
+{
+    int pos_x_possiveis[3], pos_y_possiveis[3], tam_x, tam_y;
+
+    for (int i = 0; i < tabuleiro->dim1; i++)
+    {
+        vizinhos_possiveis(&tam_x, i,tabuleiro, pos_x_possiveis);
+        for (int j = 0; j < tabuleiro->dim2; j++)
+        {
+            vizinhos_possiveis(&tam_y, j, tabuleiro, pos_y_possiveis);
+
+            tabuleiro->m[i][j] = calcula_vivo_morto(pos_x_possiveis, pos_y_possiveis, tam_x, tam_y, tabuleiro, i, j);
+        }
+    }
+}
+
+void vizinhos_possiveis(int *tamanho, int pos_atual,  Tab *tabuleiro, int vizinhos[])
+{
+    // coloca em um array as posicoes vizinhas possiveis
+
+    if ((pos_atual - 1) < 0)
+        vizinhos[0] = pos_atual,
+        vizinhos[1] = pos_atual + 1,
+        *tamanho = 2;
+
+    else if ((pos_atual + 1) > (tabuleiro->dim1 - 1))
+        vizinhos[0] = pos_atual - 1,
+        vizinhos[1] = pos_atual,
+        *tamanho = 2;
+    
+    else
+        vizinhos[0] = pos_atual - 1,
+        vizinhos[1] = pos_atual,
+        vizinhos[2] = pos_atual + 1,
+        *tamanho = 3;
+}
+
+char calcula_vivo_morto(int pos_x_possiveis[], int pos_y_possiveis[], int tam_x, int tam_y, Tab *tabuleiro, int x_atual, int y_atual)
+{
+    /* Uma célula viva morre de solidão se tiver menos de duas vizinhas vivas.
+    Uma célula viva morre por superpopulação se tiver mais que três vizinhas vivas.
+    Uma célula viva sobrevive se tiver duas ou três vizinhas vivas.
+    Uma célula morta ganha vida se tiver exatamente três vizinhas vivas */
+    int vivos = 0;
+
+    for (int i = 0; i < tam_x; i++)
+        for (int j = 0; j < tam_y; j++)
+        {
+            if (pos_x_possiveis[i] == x_atual && pos_y_possiveis[j] == y_atual) continue;
+            if (tabuleiro->mAnterior[pos_x_possiveis[i]][pos_y_possiveis[j]] == 'X') vivos++;
+        }
+
+    if (tabuleiro->mAnterior[x_atual][y_atual] == 'X')
+        return (vivos > 3 || vivos < 2) ? '.' : 'X';
+
+    return vivos == 3 ? 'X' : '.';
+    
 }
