@@ -60,7 +60,7 @@ int main()
 
     do
     {  
-        printf("Digite o numero de linhas da matriz, o numero  de colunas da matriz, e o numero de ciclos, separados por espaços (valores inteiros): ");
+        printf("Digite o numero de linhas da matriz, o numero  de colunas da matriz, e o numero de ciclos, separados por espacos (valores inteiros): ");
 
         scanf(" %d %d %d", &tabuleiro.dim1, &tabuleiro.dim2, &tabuleiro.ciclosVida);
 
@@ -168,10 +168,8 @@ void menuInicJogo(Tab *tabuleiro)
         case 5:   inicLWSS(tabuleiro); break;
     }
 
-    printf("Deseja ativar invasões? Se sim, digite \"S\" ou \"s\", caso não, digite qualquer caractere:");
-    scanf(" %c", tabuleiro->atvInvasoes);
-
-
+    printf("Deseja ativar invasoes? Se sim, digite \"S\" ou \"s\", caso nao, digite qualquer caractere:");
+    scanf(" %c", &tabuleiro->atvInvasoes);
     imprimeMatriz(tabuleiro);
 
     printf("Se inicializacao correta, digite a tecla ENTER para iniciar o jogo..."); 
@@ -312,13 +310,13 @@ char calcula_vivo_morto(int pos_possiveis[2][3], int tamanhos[2], char **mAnteri
 
 void insereInvasores(Tab *tabuleiro)
 {
-    int varreLin, varreCol, geraInvasor; // Gera invasores a partir de uma chance (definida como 1 em 5 / 20%), em espaços onde não há um organismo.
+    int varreLin, varreCol, geraInvasor; // Gera invasores a partir de uma chance (definida como 1 em 10 / 10%), em espaços onde não há um organismo.
     for(varreLin = 0; varreLin < tabuleiro->dim1; varreLin++)
         for(varreCol = 0; varreCol < tabuleiro->dim2; varreCol++)
         {
             if (tabuleiro->m[varreLin][varreCol] == '.')
             {
-                geraInvasor = rand() % 5;
+                geraInvasor = rand() % 10;
                 if(geraInvasor == 0) tabuleiro->m[varreLin][varreCol] = 'X';
             }
         }
