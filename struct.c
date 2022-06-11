@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #ifdef _WIN32
     #include <Windows.h>
     #define LIMPA "cls"
@@ -20,6 +21,7 @@ typedef struct{
     int dim1,dim2; //dimensoes do tabuleiro linhas x colunas
     char **m; //Atenção! Essa matriz terá que ser alocada dinamicamente
     //para que a funcao que inicializa possa funcionar
+    char atvInvasoes;
 }Tab;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -41,6 +43,7 @@ void jogaJogoVida(Tab *tabuleiro);
 void atualizaMat(Tab *tabuleiro, char **mAnterior);
 void vizinhos_possiveis(int *tamanho, int pos_atual,  Tab *tabuleiro, int vizinhos[]);
 char calcula_vivo_morto(int pos_possiveis[2][3], int tamanhos[2], char **mAnterior, int pos_atual[2]);
+void insereInvasores(Tab *tabuleiro);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -51,7 +54,7 @@ char calcula_vivo_morto(int pos_possiveis[2][3], int tamanhos[2], char **mAnteri
 
 int main()
 {
-
+    srand(time(NULL));
     char **mat, jogarNovamente;
     Tab tabuleiro;
 
@@ -61,10 +64,10 @@ int main()
 
         scanf(" %d %d %d", &tabuleiro.dim1, &tabuleiro.dim2, &tabuleiro.ciclosVida);
 
+
         tabuleiro.m = alocaMatriz(&tabuleiro);
 
         menuInicJogo(&tabuleiro);
-        printf("Chegou no inicbloco");
         jogaJogoVida(&tabuleiro);
 
         printf("Deseja jogar novamente? Digite qualquer caractere para continuar, ou \"n\"/\"N\" para finalizar: ");
@@ -165,6 +168,10 @@ void menuInicJogo(Tab *tabuleiro)
         case 5:   inicLWSS(tabuleiro); break;
     }
 
+    printf("Deseja ativar invasões? Se sim, digite \"S\" ou \"s\", caso não, digite qualquer caractere:");
+    scanf("%c", tabuleiro->atvInvasoes);
+
+
     imprimeMatriz(tabuleiro);
 
     printf("Se inicializacao correta, digite a tecla ENTER para iniciar o jogo..."); 
@@ -177,6 +184,7 @@ void jogaJogoVida(Tab *tabuleiro)
 {
     char **mAnt;
     int c;
+    int cicloInvasao = rand() % (tabuleiro->ciclosVida) + 1;
     
     //imprimindo na tela a matriz inicial
     system(LIMPA);
@@ -192,6 +200,9 @@ void jogaJogoVida(Tab *tabuleiro)
         copiaMatriz(tabuleiro, mAnt);
 
         atualizaMat(tabuleiro, mAnt);//atualizaMat(mAtual,mAnt,nL,nC);
+        
+        if(c == cicloInvasao) insereInvasores(tabuleiro);
+        
         system(LIMPA);
         imprimeMatriz(tabuleiro);
         
@@ -297,4 +308,18 @@ char calcula_vivo_morto(int pos_possiveis[2][3], int tamanhos[2], char **mAnteri
 
     return vivos == 3 ? 'X' : '.';
     
+}
+
+void insereInvasores(Tab *tabuleiro)
+{
+    int varreLin, varreCol, geraInvasor; // Gera invasores a partir de uma chance (definida como 1 em 5 / 20%), em espaços onde não há um organismo.
+    for(varreLin = 0; varreLin < tabuleiro->dim1; varreLin++)
+        for(varreCol = 0; varreCol < tabuleiro->dim2; varreCol++)
+        {
+            if (tabuleiro->m[varreLin][varreCol] == '.')
+            {
+                geraInvasor = rand() % 5;
+                if(geraInvasor == 0) tabuleiro->m[varreLin][varreCol] = 'X';
+            }
+        }
 }
