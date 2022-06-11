@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #ifdef _WIN32
     #include <Windows.h>
     #define LIMPA "cls"
@@ -20,6 +21,7 @@ typedef struct{
     int dim1,dim2; //dimensoes do tabuleiro linhas x colunas
     char **m; //Atenção! Essa matriz terá que ser alocada dinamicamente
     //para que a funcao que inicializa possa funcionar
+    char atvInvasoes;
 }Tab;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -37,6 +39,8 @@ void atualizaMat(Tab *tabuleiro, char **mAnterior);
 void vizinhos_possiveis(int *tamanho, int pos_atual,  Tab *tabuleiro, int vizinhos[]);
 char calcula_vivo_morto(int pos_possiveis[2][3], int tamanhos[2], char **mAnterior, int pos_atual[2]);
 void monta_arquivo(Tab *tabuleiro);
+void insereInvasores(Tab *tabuleiro);
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////// Parte a ser completada //////////////////////////////////////////
@@ -46,20 +50,20 @@ void monta_arquivo(Tab *tabuleiro);
 
 int main()
 {
-
+    srand(time(NULL));
     char **mat, jogarNovamente;
     Tab tabuleiro;
 
     do
     {  
-        printf("Digite o numero de linhas da matriz, o numero  de colunas da matriz, e o numero de ciclos, separados por espaços (valores inteiros): ");
+        printf("Digite o numero de linhas da matriz, o numero  de colunas da matriz, e o numero de ciclos, separados por espacos (valores inteiros): ");
 
         scanf(" %d %d %d", &tabuleiro.dim1, &tabuleiro.dim2, &tabuleiro.ciclosVida);
+
 
         tabuleiro.m = alocaMatriz(&tabuleiro);
 
         menuInicJogo(&tabuleiro);
-        printf("Chegou no inicbloco");
         jogaJogoVida(&tabuleiro);
 
         printf("Deseja jogar novamente? Digite qualquer caractere para continuar, ou \"n\"/\"N\" para finalizar: ");
@@ -84,6 +88,8 @@ void menuInicJogo(Tab *tabuleiro)
 
     printf("(1)Bloco\n(2)Blinker\n(3)Sapo\n(4)Glider\n(5)LWSS\nEntre com a opcao: ");
     scanf(" %s",&tabuleiro->nomeJogo);
+    printf("Deseja ativar invasoes? Se sim, digite \"S\" ou \"s\", caso nao, digite qualquer caractere:");
+    scanf(" %c", &tabuleiro->atvInvasoes);
 
     limpaMatriz(tabuleiro);
     monta_arquivo(tabuleiro);
@@ -99,6 +105,7 @@ void jogaJogoVida(Tab *tabuleiro)
 {
     char **mAnt;
     int c;
+    int cicloInvasao = rand() % (tabuleiro->ciclosVida) + 1;
     
     //imprimindo na tela a matriz inicial
     system(LIMPA);
@@ -114,6 +121,9 @@ void jogaJogoVida(Tab *tabuleiro)
         copiaMatriz(tabuleiro, mAnt);
 
         atualizaMat(tabuleiro, mAnt);//atualizaMat(mAtual,mAnt,nL,nC);
+        
+        if((tabuleiro->atvInvasoes == 'S' || tabuleiro->atvInvasoes == 's') && c == cicloInvasao) insereInvasores(tabuleiro);
+        
         system(LIMPA);
         imprimeMatriz(tabuleiro);
         
@@ -231,22 +241,36 @@ void monta_arquivo(Tab *tabuleiro){
     int linha=0,col=0;
 
     do
-{
-    //faz a leitura do caracter no arquivo apontado por pont_arq
-    c = fgetc(arquivo);
-    col=0;
-    while(c!='\n' && c != EOF){
-        
-       
-        if(c!=','){
-        
-            tabuleiro->m[linha][atoi(&c)-1]=ORG;
-            
-        }
+    {
+        //faz a leitura do caracter no arquivo apontado por pont_arq
         c = fgetc(arquivo);
-    }
-    linha+=1;
+        col=0;
+        while(c!='\n' && c != EOF){
+            
+        
+            if(c!=','){
+            
+                tabuleiro->m[linha][atoi(&c)-1]=ORG;
+                
+            }
+            c = fgetc(arquivo);
+        }
+        linha+=1;
 
 
-}while (c != EOF);
+    }while (c != EOF);
+}
+
+void insereInvasores(Tab *tabuleiro)
+{
+    int varreLin, varreCol, geraInvasor; // Gera invasores a partir de uma chance (definida como 1 em 10 / 10%), em espaços onde não há um organismo.
+    for(varreLin = 0; varreLin < tabuleiro->dim1; varreLin++)
+        for(varreCol = 0; varreCol < tabuleiro->dim2; varreCol++)
+        {
+            if (tabuleiro->m[varreLin][varreCol] == '.')
+            {
+                geraInvasor = rand() % 10;
+                if(geraInvasor == 0) tabuleiro->m[varreLin][varreCol] = 'X';
+            }
+        }
 }
