@@ -169,7 +169,7 @@ void menuInicJogo(Tab *tabuleiro)
     }
 
     printf("Deseja ativar invasões? Se sim, digite \"S\" ou \"s\", caso não, digite qualquer caractere:");
-    scanf("%c", tabuleiro->atvInvasoes);
+    scanf(" %c", tabuleiro->atvInvasoes);
 
 
     imprimeMatriz(tabuleiro);
@@ -201,7 +201,7 @@ void jogaJogoVida(Tab *tabuleiro)
 
         atualizaMat(tabuleiro, mAnt);//atualizaMat(mAtual,mAnt,nL,nC);
         
-        if(c == cicloInvasao) insereInvasores(tabuleiro);
+        if((tabuleiro->atvInvasoes == 'S' || tabuleiro->atvInvasoes == 's') && c == cicloInvasao) insereInvasores(tabuleiro);
         
         system(LIMPA);
         imprimeMatriz(tabuleiro);
