@@ -296,5 +296,5 @@ char calcula_vivo_morto(int pos_possiveis[2][3], int tamanhos[2], char **mAnteri
         return (vivos > 3 || vivos < 2) ? '.' : 'X';
 
     return vivos == 3 ? 'X' : '.';
-    
+
 }
