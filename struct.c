@@ -14,7 +14,7 @@
 #define TAM 101
 #define TMP_ESPERA 1
 
-typedef struct{
+typedef struct {
     char nomeJogo[TAM]; //o nome do jogo deve ser relativo ao padrao
     //de inicializacao. Por exemplo, JogoSapo ou JogoBloco
     int ciclosVida; // Define quanto cada jogo vai rodar (ciclos)
@@ -22,7 +22,7 @@ typedef struct{
     char **m; //Atenção! Essa matriz terá que ser alocada dinamicamente
     //para que a funcao que inicializa possa funcionar
     char atvInvasoes;
-}Tab;
+} Tab;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -43,7 +43,7 @@ void insereInvasores(Tab *tabuleiro);
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////// Parte a ser completada //////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -101,6 +101,7 @@ void menuInicJogo(Tab *tabuleiro)
     getchar();
 
 }
+
 void jogaJogoVida(Tab *tabuleiro)
 {
     char **mAnt;
@@ -111,7 +112,6 @@ void jogaJogoVida(Tab *tabuleiro)
     system(LIMPA);
 
     imprimeMatriz(tabuleiro);
-    // getchar();
     sleep(TMP_ESPERA);
 
     mAnt = alocaMatriz(tabuleiro);
@@ -120,7 +120,7 @@ void jogaJogoVida(Tab *tabuleiro)
     {
         copiaMatriz(tabuleiro, mAnt);
 
-        atualizaMat(tabuleiro, mAnt);//atualizaMat(mAtual,mAnt,nL,nC);
+        atualizaMat(tabuleiro, mAnt);
         
         if((tabuleiro->atvInvasoes == 'S' || tabuleiro->atvInvasoes == 's') && c == cicloInvasao) insereInvasores(tabuleiro);
         
@@ -172,6 +172,7 @@ void copiaMatriz(Tab *tabuleiro, char **mAnterior)
     for(l = 0; l < tabuleiro->dim1; l++)
         for(c = 0; c < tabuleiro->dim2; c++) mAnterior[l][c] = tabuleiro->m[l][c];
 }
+
 void atualizaMat(Tab *tabuleiro, char **mAnterior)
 {
     int pos_possiveis[2][3], tamanhos[2], pos_atual[2];
