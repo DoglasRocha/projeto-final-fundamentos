@@ -31,11 +31,6 @@ typedef struct{
 char **alocaMatriz(Tab *tabuleiro);
 void desalocaMatriz(Tab *tabuleiro);
 void limpaMatriz(Tab *tabuleiro);
-void inicBlinker(Tab *tabuleiro);
-void inicBloco(Tab *tabuleiro);
-void inicSapo(Tab *tabuleiro);
-void inicGlider(Tab *tabuleiro);
-void inicLWSS(Tab *tabuleiro);
 void menuInicJogo(Tab *tabuleiro);
 void imprimeMatriz(Tab *tabuleiro);
 void copiaMatriz(Tab *tabuleiro, char **mAnterior);
@@ -43,6 +38,7 @@ void jogaJogoVida(Tab *tabuleiro);
 void atualizaMat(Tab *tabuleiro, char **mAnterior);
 void vizinhos_possiveis(int *tamanho, int pos_atual,  Tab *tabuleiro, int vizinhos[]);
 char calcula_vivo_morto(int pos_possiveis[2][3], int tamanhos[2], char **mAnterior, int pos_atual[2]);
+void monta_arquivo(Tab *tabuleiro);
 void insereInvasores(Tab *tabuleiro);
 
 
@@ -60,7 +56,7 @@ int main()
 
     do
     {  
-        printf("Digite o numero de linhas da matriz, o numero  de colunas da matriz, e o numero de ciclos, separados por espaços (valores inteiros): ");
+        printf("Digite o numero de linhas da matriz, o numero  de colunas da matriz, e o numero de ciclos, separados por espacos (valores inteiros): ");
 
         scanf(" %d %d %d", &tabuleiro.dim1, &tabuleiro.dim2, &tabuleiro.ciclosVida);
 
@@ -85,93 +81,18 @@ void limpaMatriz(Tab *tabuleiro)
             tabuleiro->m[i][j]=VAZ;
 }
 
-void inicBlinker(Tab *tabuleiro)
-{
-    char padrao[1][3]={{ORG,ORG,ORG}};
-    int i,j, xInic=tabuleiro->dim1/2, yInic=tabuleiro->dim2/2;
 
-    limpaMatriz(tabuleiro);
-
-    for(i=0;i<1;i++)
-        for(j=0;j<3;j++)
-            tabuleiro->m[xInic+i][yInic+j]=padrao[i][j];
-}
-
-void inicBloco(Tab *tabuleiro)
-{
-    char padrao[2][2]={{ORG,ORG},{ORG,ORG}};
-    int i,j,xInic=tabuleiro->dim1/2, yInic=tabuleiro->dim2/2;
-    limpaMatriz(tabuleiro);
-
-    for(i=0;i<2;i++)
-        for(j=0;j<2;j++)
-            tabuleiro->m[xInic+i][yInic+j]=padrao[i][j];
-
-}
-
-void inicSapo(Tab *tabuleiro)
-{
-
-    char padrao[2][4]={{VAZ,ORG,ORG,ORG},{ORG,ORG,ORG,VAZ}};
-    int i,j,xInic=tabuleiro->dim1/2, yInic=tabuleiro->dim2/2;
-
-    limpaMatriz(tabuleiro);
-
-    for(i=0;i<2;i++)
-        for(j=0;j<4;j++)
-            tabuleiro->m[xInic+i][yInic+j]=padrao[i][j];
-
-}
-
-void inicGlider(Tab *tabuleiro)
-{
-    char padrao[3][3]={{ORG,ORG,ORG},{ORG,VAZ,VAZ},{VAZ,ORG,VAZ}};
-    int i,j,xInic,yInic;
-
-    limpaMatriz(tabuleiro);
-
-    xInic=tabuleiro->dim1-4;
-    yInic=tabuleiro->dim2-4;
-
-    for(i=0;i<3;i++)
-        for(j=0;j<3;j++)
-            tabuleiro->m[xInic+i][yInic+j]=padrao[i][j];
-}
-
-void inicLWSS(Tab *tabuleiro)
-{
-    char padrao[4][5]={{VAZ,ORG,VAZ,VAZ,ORG},{ORG,VAZ,VAZ,VAZ,VAZ},{ORG,VAZ,VAZ,VAZ,ORG},{ORG,ORG,ORG,ORG,VAZ}};
-    int i,j,xInic,yInic;
-
-    limpaMatriz(tabuleiro);
-
-    xInic=tabuleiro->dim1-5;
-    yInic=tabuleiro->dim2-6;
-
-    for(i=0;i<4;i++)
-        for(j=0;j<5;j++)
-            tabuleiro->m[xInic+i][yInic+j]=padrao[i][j];
-
-}
 void menuInicJogo(Tab *tabuleiro)
 {
     int opcao;
 
     printf("(1)Bloco\n(2)Blinker\n(3)Sapo\n(4)Glider\n(5)LWSS\nEntre com a opcao: ");
-    scanf("%d",&opcao);
-    switch(opcao)
-    {
-        case 1:   inicBloco(tabuleiro); break;
-        case 2:   inicBlinker(tabuleiro); break;
-        case 3:   inicSapo(tabuleiro); break;
-        case 4:   inicGlider(tabuleiro); break;
-        case 5:   inicLWSS(tabuleiro); break;
-    }
+    scanf(" %s",&tabuleiro->nomeJogo);
+    printf("Deseja ativar invasoes? Se sim, digite \"S\" ou \"s\", caso nao, digite qualquer caractere:");
+    scanf(" %c", &tabuleiro->atvInvasoes);
 
-    printf("Deseja ativar invasões? Se sim, digite \"S\" ou \"s\", caso não, digite qualquer caractere:");
-    scanf(" %c", tabuleiro->atvInvasoes);
-
-
+    limpaMatriz(tabuleiro);
+    monta_arquivo(tabuleiro);
     imprimeMatriz(tabuleiro);
 
     printf("Se inicializacao correta, digite a tecla ENTER para iniciar o jogo..."); 
@@ -309,16 +230,46 @@ char calcula_vivo_morto(int pos_possiveis[2][3], int tamanhos[2], char **mAnteri
     return vivos == 3 ? 'X' : '.';
     
 }
+void monta_arquivo(Tab *tabuleiro){
+    FILE *arquivo = fopen(tabuleiro->nomeJogo, "r");
+    char c;
+    if (arquivo == NULL)
+    {
+        printf("Erro na abertura do arquivo\n");
+        exit(1);
+    }
+    int linha=0,col=0;
+
+    do
+    {
+        //faz a leitura do caracter no arquivo apontado por pont_arq
+        c = fgetc(arquivo);
+        col=0;
+        while(c!='\n' && c != EOF){
+            
+        
+            if(c!=','){
+            
+                tabuleiro->m[linha][atoi(&c)-1]=ORG;
+                
+            }
+            c = fgetc(arquivo);
+        }
+        linha+=1;
+
+
+    }while (c != EOF);
+}
 
 void insereInvasores(Tab *tabuleiro)
 {
-    int varreLin, varreCol, geraInvasor; // Gera invasores a partir de uma chance (definida como 1 em 5 / 20%), em espaços onde não há um organismo.
+    int varreLin, varreCol, geraInvasor; // Gera invasores a partir de uma chance (definida como 1 em 10 / 10%), em espaços onde não há um organismo.
     for(varreLin = 0; varreLin < tabuleiro->dim1; varreLin++)
         for(varreCol = 0; varreCol < tabuleiro->dim2; varreCol++)
         {
             if (tabuleiro->m[varreLin][varreCol] == '.')
             {
-                geraInvasor = rand() % 5;
+                geraInvasor = rand() % 10;
                 if(geraInvasor == 0) tabuleiro->m[varreLin][varreCol] = 'X';
             }
         }
