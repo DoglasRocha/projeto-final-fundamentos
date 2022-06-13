@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 #ifdef _WIN32
     #include <Windows.h>
@@ -60,12 +61,12 @@ int main()
 
         scanf(" %d %d %d", &tabuleiro.dim1, &tabuleiro.dim2, &tabuleiro.ciclosVida);
 
-
         tabuleiro.m = alocaMatriz(&tabuleiro);
 
         menuInicJogo(&tabuleiro);
         jogaJogoVida(&tabuleiro);
 
+        printf("Modo de jogo: %s\n", tabuleiro.nomeJogo);
         printf("Deseja jogar novamente? Digite qualquer caractere para continuar, ou \"n\"/\"N\" para finalizar: ");
         scanf("%c", &jogarNovamente);
     } while (jogarNovamente != 'n' && jogarNovamente != 'N');
@@ -86,9 +87,35 @@ void menuInicJogo(Tab *tabuleiro)
 {
     int opcao;
 
-    printf("(1)Bloco\n(2)Blinker\n(3)Sapo\n(4)Glider\n(5)LWSS\nEntre com a opcao: ");
-    scanf(" %s",&tabuleiro->nomeJogo);
-    printf("Deseja ativar invasoes? Se sim, digite \"S\" ou \"s\", caso nao, digite qualquer caractere:");
+    printf("(1)Bloco\n(2)Blinker\n(3)Sapo\n(4)Glider\n(5)LWSS\n(6)Customizado\nEntre com a opcao: ");
+    scanf("%d", &opcao);
+
+    switch (opcao)
+    {
+        case 1:
+            sprintf(tabuleiro->nomeJogo, "Bloco"); break;
+
+        case 2:
+            sprintf(tabuleiro->nomeJogo, "Blinker"); break;
+
+        case 3:
+            sprintf(tabuleiro->nomeJogo, "Sapo"); break;
+
+        case 4:
+            sprintf(tabuleiro->nomeJogo, "Glider"); break;
+
+        case 5:
+            sprintf(tabuleiro->nomeJogo, "LWSS"); break;
+
+        case 6:
+            sprintf(tabuleiro->nomeJogo, "Customizado"); break;
+
+        default:
+            printf("Opcao invalida! Saindo...\n"); 
+            exit(1);
+    }
+
+    printf("Deseja ativar invasoes? Se sim, digite \"S\" ou \"s\", caso nao, digite qualquer caractere: ");
     scanf(" %c", &tabuleiro->atvInvasoes);
 
     limpaMatriz(tabuleiro);
@@ -108,7 +135,6 @@ void jogaJogoVida(Tab *tabuleiro)
     int c;
     int cicloInvasao = rand() % (tabuleiro->ciclosVida) + 1;
     
-    //imprimindo na tela a matriz inicial
     system(LIMPA);
 
     imprimeMatriz(tabuleiro);
@@ -231,15 +257,19 @@ char calcula_vivo_morto(int pos_possiveis[2][3], int tamanhos[2], char **mAnteri
     return vivos == 3 ? 'X' : '.';
     
 }
-void monta_arquivo(Tab *tabuleiro){
-    FILE *arquivo = fopen(tabuleiro->nomeJogo, "r");
-    char c;
+void monta_arquivo(Tab *tabuleiro)
+{
+    char path[100], c;
+    int linha=0,col=0;
+
+    sprintf(path, "iniciacoes/%s.csv", tabuleiro->nomeJogo);
+
+    FILE *arquivo = fopen(path, "r");
     if (arquivo == NULL)
     {
         printf("Erro na abertura do arquivo\n");
         exit(1);
     }
-    int linha=0,col=0;
 
     do
     {
@@ -257,9 +287,7 @@ void monta_arquivo(Tab *tabuleiro){
             c = fgetc(arquivo);
         }
         linha+=1;
-
-
-    }while (c != EOF);
+    } while (c != EOF);
 }
 
 void insereInvasores(Tab *tabuleiro)
@@ -271,7 +299,7 @@ void insereInvasores(Tab *tabuleiro)
             if (tabuleiro->m[varreLin][varreCol] == '.')
             {
                 geraInvasor = rand() % 10;
-                if(geraInvasor == 0) tabuleiro->m[varreLin][varreCol] = 'X';
+                if (geraInvasor == 0) tabuleiro->m[varreLin][varreCol] = 'X';
             }
         }
 }
