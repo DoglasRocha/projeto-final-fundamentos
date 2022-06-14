@@ -20,8 +20,7 @@ typedef struct {
     //de inicializacao. Por exemplo, JogoSapo ou JogoBloco
     int ciclosVida; // Define quanto cada jogo vai rodar (ciclos)
     int dim1,dim2; //dimensoes do tabuleiro linhas x colunas
-    char **m; //Atenção! Essa matriz terá que ser alocada dinamicamente
-    //para que a funcao que inicializa possa funcionar
+    char **m; 
     char atvInvasoes;
 } Tab;
 
@@ -108,7 +107,9 @@ void menuInicJogo(Tab *tabuleiro)
             sprintf(tabuleiro->nomeJogo, "LWSS"); break;
 
         case 6:
-            sprintf(tabuleiro->nomeJogo, "Customizado"); break;
+            printf("Por favor, coloque seu arquivo csv customizado no diretorio \"iniciacoes\" e digite *apenas* seu nome (sem a extensão .csv): ");
+            getchar(); // limpando o stdin
+            scanf("%s", tabuleiro->nomeJogo); break;
 
         default:
             printf("Opcao invalida! Saindo...\n"); 
@@ -132,8 +133,7 @@ void menuInicJogo(Tab *tabuleiro)
 void jogaJogoVida(Tab *tabuleiro)
 {
     char **mAnt;
-    int c;
-    int cicloInvasao = rand() % (tabuleiro->ciclosVida) + 1;
+    int c, cicloInvasao = rand() % (tabuleiro->ciclosVida) + 1;
     
     system(LIMPA);
 
@@ -148,7 +148,7 @@ void jogaJogoVida(Tab *tabuleiro)
 
         atualizaMat(tabuleiro, mAnt);
         
-        if((tabuleiro->atvInvasoes == 'S' || tabuleiro->atvInvasoes == 's') && c == cicloInvasao) insereInvasores(tabuleiro);
+        if ((tabuleiro->atvInvasoes == 'S' || tabuleiro->atvInvasoes == 's') && c == cicloInvasao) insereInvasores(tabuleiro);
         
         system(LIMPA);
         imprimeMatriz(tabuleiro);
@@ -238,10 +238,6 @@ void vizinhos_possiveis(int *tamanho, int pos_atual,  Tab *tabuleiro, int vizinh
 
 char calcula_vivo_morto(int pos_possiveis[2][3], int tamanhos[2], char **mAnterior, int pos_atual[2])
 {
-    /* Uma célula viva morre de solidão se tiver menos de duas vizinhas vivas.
-    Uma célula viva morre por superpopulação se tiver mais que três vizinhas vivas.
-    Uma célula viva sobrevive se tiver duas ou três vizinhas vivas.
-    Uma célula morta ganha vida se tiver exatamente três vizinhas vivas */
     int vivos = 0;
 
     for (int i = 0; i < tamanhos[0]; i++)
@@ -277,13 +273,10 @@ void monta_arquivo(Tab *tabuleiro)
         c = fgetc(arquivo);
         col=0;
         while(c!='\n' && c != EOF){
-            
         
-            if(c!=','){
-            
+            if(c!=',')
                 tabuleiro->m[linha][atoi(&c)-1]=ORG;
                 
-            }
             c = fgetc(arquivo);
         }
         linha+=1;
@@ -293,13 +286,12 @@ void monta_arquivo(Tab *tabuleiro)
 void insereInvasores(Tab *tabuleiro)
 {
     int varreLin, varreCol, geraInvasor; // Gera invasores a partir de uma chance (definida como 1 em 10 / 10%), em espaços onde não há um organismo.
+    
     for(varreLin = 0; varreLin < tabuleiro->dim1; varreLin++)
         for(varreCol = 0; varreCol < tabuleiro->dim2; varreCol++)
-        {
             if (tabuleiro->m[varreLin][varreCol] == '.')
             {
                 geraInvasor = rand() % 10;
                 if (geraInvasor == 0) tabuleiro->m[varreLin][varreCol] = 'X';
             }
-        }
 }
