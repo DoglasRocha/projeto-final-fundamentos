@@ -16,12 +16,11 @@
 #define TMP_ESPERA 1
 
 typedef struct {
-    char nomeJogo[TAM]; //o nome do jogo deve ser relativo ao padrao
-    //de inicializacao. Por exemplo, JogoSapo ou JogoBloco
-    int ciclosVida; // Define quanto cada jogo vai rodar (ciclos)
-    int dim1,dim2; //dimensoes do tabuleiro linhas x colunas
-    char **m;
-    char atvInvasoes;
+    char nomeJogo[TAM]; // Guarda o nome do arquivo do jogo (sem a extensão .csv).
+    int ciclosVida; // Define quanto cada jogo vai rodar (ciclos).
+    int dim1,dim2; // Dimensoes do tabuleiro linhas x colunas.
+    char **m; // A matriz do jogo em si.
+    char atvInvasoes; // Variável que determina se a regra de invasores vai ser aplicada.
 } Tab;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -51,10 +50,10 @@ void insereInvasores(Tab *tabuleiro);
 int main()
 {
     srand(time(NULL));
-    char **mat, jogarNovamente;
+    char jogarNovamente;
     Tab tabuleiro;
 
-    do
+    do // Recebe entrada do usuário de informações sobre o jogo, abre o menu, executa o jogo, e pergunta se o usuário deseja jogar novamente.
     {  
         printf("Digite o numero de linhas da matriz, o numero  de colunas da matriz, e o numero de ciclos, separados por espacos (valores inteiros): ");
 
@@ -71,9 +70,10 @@ int main()
     } while (jogarNovamente != 'n' && jogarNovamente != 'N');
 
     desalocaMatriz(&tabuleiro);
+    return 0;
 }
 
-void limpaMatriz(Tab *tabuleiro)
+void limpaMatriz(Tab *tabuleiro) // Retira o lixo da matriz.
 {
     int i,j;
     for(i=0;i<tabuleiro->dim1;i++)
@@ -82,7 +82,7 @@ void limpaMatriz(Tab *tabuleiro)
 }
 
 
-void menuInicJogo(Tab *tabuleiro)
+void menuInicJogo(Tab *tabuleiro) // Inicializa o jogo, perguntando o padrão a ser utilizado, além da regra adicional (invasores).
 {
     int opcao;
 
@@ -130,7 +130,7 @@ void menuInicJogo(Tab *tabuleiro)
 
 }
 
-void jogaJogoVida(Tab *tabuleiro)
+void jogaJogoVida(Tab *tabuleiro) // Realiza os algoritmos de cada ciclo, aplicando invasores caso o ciclo sorteado for o atual.
 {
     char **mAnt;
     int c, cicloInvasao = rand() % (tabuleiro->ciclosVida) + 1;
@@ -192,14 +192,14 @@ void imprimeMatriz(Tab *tabuleiro)
     }
 }
 
-void copiaMatriz(Tab *tabuleiro, char **mAnterior)
+void copiaMatriz(Tab *tabuleiro, char **mAnterior) // Copia a matriz atual na matriz anterior.
 {
     int l, c;
     for(l = 0; l < tabuleiro->dim1; l++)
         for(c = 0; c < tabuleiro->dim2; c++) mAnterior[l][c] = tabuleiro->m[l][c];
 }
 
-void atualizaMat(Tab *tabuleiro, char **mAnterior)
+void atualizaMat(Tab *tabuleiro, char **mAnterior) // Executa os algoritmos do jogo.
 {
     int pos_possiveis[2][3], tamanhos[2], pos_atual[2];
 
@@ -217,7 +217,7 @@ void atualizaMat(Tab *tabuleiro, char **mAnterior)
 
 void vizinhos_possiveis(int *tamanho, int pos_atual,  Tab *tabuleiro, int vizinhos[])
 {
-    // coloca em um array as posicoes vizinhas possiveis
+    // Coloca em um array as posicoes vizinhas possiveis.
 
     if ((pos_atual - 1) < 0)
         vizinhos[0] = pos_atual,
@@ -236,7 +236,8 @@ void vizinhos_possiveis(int *tamanho, int pos_atual,  Tab *tabuleiro, int vizinh
         *tamanho = 3;
 }
 
-char calcula_vivo_morto(int pos_possiveis[2][3], int tamanhos[2], char **mAnterior, int pos_atual[2])
+char calcula_vivo_morto(int pos_possiveis[2][3], int tamanhos[2], char **mAnterior, int pos_atual[2]) /* Determina para cada posição se vai ser gerado um organismo, 
+se um organismo permanece vivo, ou se ele morre. */
 {
     int vivos = 0;
 
@@ -269,7 +270,7 @@ void monta_arquivo(Tab *tabuleiro) // Lê o arquivo csv e gera o padrão a parti
 
     do
     {
-        // Posição do organismo determinada pela linha em que está o caractere no .csv (linha), e pelo inteiro ao qual o caractere remete (coluna).
+        // Linha do organismo determinada pela linha em que está o caractere no .csv, e coluna pelo inteiro ao qual o caractere remete.
         c = fgetc(arquivo);
         while(c!='\n' && c != EOF){
         
