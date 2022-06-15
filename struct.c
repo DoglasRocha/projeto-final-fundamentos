@@ -20,7 +20,7 @@ typedef struct {
     //de inicializacao. Por exemplo, JogoSapo ou JogoBloco
     int ciclosVida; // Define quanto cada jogo vai rodar (ciclos)
     int dim1,dim2; //dimensoes do tabuleiro linhas x colunas
-    char **m; 
+    char **m;
     char atvInvasoes;
 } Tab;
 
@@ -253,10 +253,10 @@ char calcula_vivo_morto(int pos_possiveis[2][3], int tamanhos[2], char **mAnteri
     return vivos == 3 ? 'X' : '.';
     
 }
-void monta_arquivo(Tab *tabuleiro)
+void monta_arquivo(Tab *tabuleiro) // Lê o arquivo csv e gera o padrão a partir dele.
 {
     char path[100], c;
-    int linha=0,col=0;
+    int linha=0;
 
     sprintf(path, "iniciacoes/%s.csv", tabuleiro->nomeJogo);
 
@@ -269,9 +269,8 @@ void monta_arquivo(Tab *tabuleiro)
 
     do
     {
-        //faz a leitura do caracter no arquivo apontado por pont_arq
+        // Posição do organismo determinada pela linha em que está o caractere no .csv (linha), e pelo inteiro ao qual o caractere remete (coluna).
         c = fgetc(arquivo);
-        col=0;
         while(c!='\n' && c != EOF){
         
             if(c!=',')
