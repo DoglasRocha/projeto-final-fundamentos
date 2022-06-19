@@ -169,7 +169,6 @@ char **alocaMatriz(Tab *tabuleiro)
     for (int i = 0; i < tabuleiro->dim1; i++)
         matriz[i] = (char *) malloc(tabuleiro->dim2 * sizeof(char));
 
-
     return matriz;
 }
 
@@ -256,7 +255,7 @@ se um organismo permanece vivo, ou se ele morre. */
 }
 void monta_arquivo(Tab *tabuleiro) // Lê o arquivo csv e gera o padrão a partir dele.
 {
-    char path[100], c[80], *caract,s[2]={','}, *end;
+    char path[100], c[80], *caract, s[2]={','}, *end;
     int linha=0;
 
     sprintf(path, "iniciacoes/%s.csv", tabuleiro->nomeJogo);
@@ -267,23 +266,26 @@ void monta_arquivo(Tab *tabuleiro) // Lê o arquivo csv e gera o padrão a parti
         printf("Erro na abertura do arquivo\n");
         exit(1);
     } 
+
     end = fgets(c,80,arquivo);
     caract = strtok(c,s);
-    do
+    
+    while (end != NULL)
     {
-        // Linha do organismo determinada pela linha em que está o caractere no .csv, e coluna pelo inteiro ao qual o caractere remete.
-       
-
+        // Linha do organismo determinada pela linha em que está o caractere no .csv, e coluna pelo inteiro ao qual o caractere remete
         while(caract != NULL){
-        
-                tabuleiro->m[linha][atoi(caract)-1]=ORG;
+                
+            if (strcmp(caract, "\n"))
+                tabuleiro->m[linha][atoi(caract)]=ORG;
                 
             caract = strtok(NULL,s);
         }
         linha+=1;
         end = fgets(c,80,arquivo);
         caract = strtok(c,s);
-    } while (end != NULL);
+    }
+
+    fclose(arquivo);
 }
 
 void insereInvasores(Tab *tabuleiro)
