@@ -245,13 +245,13 @@ se um organismo permanece vivo, ou se ele morre. */
         for (int j = 0; j < tamanhos[1]; j++)
         {
             if (pos_possiveis[0][i] == pos_atual[0] && pos_possiveis[1][j] == pos_atual[1]) continue;
-            if (mAnterior[pos_possiveis[0][i]][pos_possiveis[1][j]] == 'X') vivos++;
+            if (mAnterior[pos_possiveis[0][i]][pos_possiveis[1][j]] == ORG) vivos++;
         }
 
-    if (mAnterior[pos_atual[0]][pos_atual[1]] == 'X')
-        return (vivos > 3 || vivos < 2) ? '.' : 'X';
+    if (mAnterior[pos_atual[0]][pos_atual[1]] == ORG)
+        return (vivos > 3 || vivos < 2) ? VAZ : ORG;
 
-    return vivos == 3 ? 'X' : '.';
+    return vivos == 3 ? ORG : VAZ;
     
 }
 void monta_arquivo(Tab *tabuleiro) // Lê o arquivo csv e gera o padrão a partir dele.
@@ -289,9 +289,9 @@ void insereInvasores(Tab *tabuleiro)
     
     for(varreLin = 0; varreLin < tabuleiro->dim1; varreLin++)
         for(varreCol = 0; varreCol < tabuleiro->dim2; varreCol++)
-            if (tabuleiro->m[varreLin][varreCol] == '.')
+            if (tabuleiro->m[varreLin][varreCol] == VAZ)
             {
                 geraInvasor = rand() % 10;
-                if (geraInvasor == 0) tabuleiro->m[varreLin][varreCol] = 'X';
+                if (geraInvasor == 0) tabuleiro->m[varreLin][varreCol] = ORG;
             }
 }
