@@ -256,7 +256,7 @@ se um organismo permanece vivo, ou se ele morre. */
 }
 void monta_arquivo(Tab *tabuleiro) // Lê o arquivo csv e gera o padrão a partir dele.
 {
-    char path[100], c;
+    char path[100], c[80], *caract,s[2]={','}, *end;
     int linha=0;
 
     sprintf(path, "iniciacoes/%s.csv", tabuleiro->nomeJogo);
@@ -266,21 +266,24 @@ void monta_arquivo(Tab *tabuleiro) // Lê o arquivo csv e gera o padrão a parti
     {
         printf("Erro na abertura do arquivo\n");
         exit(1);
-    }
-
+    } 
+    end = fgets(c,80,arquivo);
+    caract = strtok(c,s);
     do
     {
         // Linha do organismo determinada pela linha em que está o caractere no .csv, e coluna pelo inteiro ao qual o caractere remete.
-        c = fgetc(arquivo);
-        while(c!='\n' && c != EOF){
+       
+
+        while(caract != NULL){
         
-            if(c!=',')
-                tabuleiro->m[linha][atoi(&c)-1]=ORG;
+                tabuleiro->m[linha][atoi(caract)-1]=ORG;
                 
-            c = fgetc(arquivo);
+            caract = strtok(NULL,s);
         }
         linha+=1;
-    } while (c != EOF);
+        end = fgets(c,80,arquivo);
+        caract = strtok(c,s);
+    } while (end != NULL);
 }
 
 void insereInvasores(Tab *tabuleiro)
