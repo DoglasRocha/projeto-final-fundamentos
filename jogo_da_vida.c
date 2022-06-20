@@ -255,7 +255,7 @@ se um organismo permanece vivo, ou se ele morre. */
 }
 void monta_arquivo(Tab *tabuleiro) // Lê o arquivo csv e gera o padrão a partir dele.
 {
-    char path[100], c[80], *caract, s[2]={','}, *end;
+    char path[100], c[80], *caract, *end;
     int linha=0;
 
     sprintf(path, "iniciacoes/%s.csv", tabuleiro->nomeJogo);
@@ -267,22 +267,19 @@ void monta_arquivo(Tab *tabuleiro) // Lê o arquivo csv e gera o padrão a parti
         exit(1);
     } 
 
-    end = fgets(c,80,arquivo);
-    caract = strtok(c,s);
-    
-    while (end != NULL)
+    while (fgets(c,80,arquivo))
     {
+        caract = strtok(c,",");
+        
         // Linha do organismo determinada pela linha em que está o caractere no .csv, e coluna pelo inteiro ao qual o caractere remete
         while(caract != NULL){
                 
             if (strcmp(caract, "\n"))
-                tabuleiro->m[linha][atoi(caract)]=ORG;
+                tabuleiro->m[linha][atoi(caract)-1]=ORG;
                 
-            caract = strtok(NULL,s);
+            caract = strtok(NULL,",");
         }
         linha+=1;
-        end = fgets(c,80,arquivo);
-        caract = strtok(c,s);
     }
 
     fclose(arquivo);
